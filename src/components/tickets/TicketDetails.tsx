@@ -72,6 +72,11 @@ export function TicketDetails({ ticket, onClose, onUpdate }: TicketDetailsProps)
           <div>
             <div className="flex items-center gap-2 mb-1">
               {issueCat && <span className="text-xl">{issueCat.icon}</span>}
+              {(ticket.serviceName || issueCat?.label) && (
+                <span className="text-xs font-medium text-muted-foreground">
+                  {ticket.serviceName || issueCat?.label}
+                </span>
+              )}
               <span className="text-xs font-mono text-muted-foreground">{ticket.ticketId}</span>
               <span className={cn(
                 'px-2 py-0.5 rounded-full text-xs font-medium text-white',

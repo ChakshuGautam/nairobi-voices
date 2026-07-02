@@ -198,7 +198,16 @@ export function mapServiceCodeToIssueCategory(serviceCode?: string, serviceName?
   return 'other';
 }
 
-/** Resolve the PGR serviceCode to send for a submission (prefers a live code). */
+/**
+ * Resolve the PGR serviceCode to send for a submission (prefers a live code).
+ *
+ * NOTE: the `serviceCode` values baked into `ISSUE_CATEGORIES` (ROAD_MAINTENANCE,
+ * WATER_SUPPLY, etc.) are legacy/presentation-only fallbacks — Bomet's live
+ * ServiceDefs are health-sector codes, not these. createStory hard-requires a
+ * live serviceCode from the category picker, so this fallback branch is
+ * effectively unreachable; the codes are kept only because `ISSUE_CATEGORIES`
+ * is imported elsewhere for its label/icon/description.
+ */
 export function resolveServiceCode(submission: StorySubmission): string | undefined {
   if (submission.serviceCode) return submission.serviceCode;
   const match = ISSUE_CATEGORIES.find((c) => c.code === submission.issueCategory);
@@ -305,6 +314,10 @@ export function pgrToStory(wrapper: ServiceWrapper, opts: PgrToStoryOptions = {}
     category: 'complaint',
     issueCategory: mapServiceCodeToIssueCategory(s.serviceCode, s.additionalDetail?.serviceName),
     serviceCode: s.serviceCode,
+    // Real, human-readable category name (Bomet has 47 health-sector categories
+    // that don't fit the 6 IssueCategory buckets). issueCategory above is only
+    // used for the decorative icon heuristic.
+    serviceName: s.additionalDetail?.serviceName || prettifyBoundaryCode(s.serviceCode) || undefined,
     title,
     description,
     lat,
@@ -361,10 +374,31 @@ export function storySubmissionToPgr(
   const wardCode = submission.wardCode;
   const wardName = submission.wardName || prettifyBoundaryCode(wardCode) || undefined;
 
+  // PGR has no dedicated fields for the location description or the beneficiary
+  // (on-behalf) contact, so append them to the description body — otherwise
+  // everything the wizard collected here would be silently dropped (issue #14).
+  const bodyParts: string[] = [];
+  const baseBody = (submission.description ?? '').trim();
+  if (baseBody) bodyParts.push(baseBody);
+
+  const locationDescription = submission.locationDescription?.trim();
+  if (locationDescription) bodyParts.push(`Location: ${locationDescription}`);
+
+  const beneficiary = submission.beneficiary;
+  if (beneficiary?.isOnBehalf) {
+    const name = beneficiary.name?.trim();
+    if (name) {
+      const detailBits = [beneficiary.relationship?.trim(), beneficiary.phone?.trim()]
+        .filter((v): v is string => Boolean(v));
+      const suffix = detailBits.length ? ` (${detailBits.join(', ')})` : '';
+      bodyParts.push(`Reported on behalf of: ${name}${suffix}`);
+    }
+  }
+
   return {
     tenantId: CITY_TENANT_ID,
     serviceCode,
-    description: composeDescription(submission.title, submission.description),
+    description: composeDescription(submission.title, bodyParts.join('\n\n')),
     source: PGR_SOURCE,
     address: {
       tenantId: CITY_TENANT_ID,

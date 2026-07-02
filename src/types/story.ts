@@ -43,6 +43,8 @@ export interface Story {
   category: StoryCategory;
   issueCategory?: IssueCategory;
   serviceCode?: string; // DIGIT PGR service code
+  serviceName?: string; // Human-readable category name from PGR / localization
+
   title: string;
   description: string;
   audioUrl?: string;

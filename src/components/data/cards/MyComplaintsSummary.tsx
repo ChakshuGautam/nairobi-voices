@@ -1,136 +1,18 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  User, AlertCircle, Clock, CheckCircle2, AlertTriangle, ArrowRight, Users, TrendingUp,
+  User, Clock, CheckCircle2, AlertTriangle, ArrowRight, TrendingUp,
   FileText, FolderKanban, MessageSquare,
-  Waves, CloudRain, Home, Construction, LifeBuoy, Trees,
-  Route, Droplet, Trash2, Lightbulb, Volume2, ClipboardList,
-  LucideIcon,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Story, ISSUE_CATEGORIES } from '@/types/story';
+import { Story } from '@/types/story';
 import { apiClient } from '@/lib/apiClient';
 import { cn } from '@/lib/utils';
 import { InfoTooltip } from '../ServiceAnalytics';
-import { getComplaintsByDepartment } from '@/lib/serviceAnalyticsData';
-import { DepartmentRatingsDetail } from './DepartmentRatingsDetail';
 
-// Category to Department mapping
-const CATEGORY_TO_DEPARTMENT: Record<string, string> = {
-  'WASTE': 'Environment',
-  'WATER': 'Water and Sewerage',
-  'ROADS': 'Works',
-  'STREETLIGHTS': 'Mobility and ICT Infrastructure',
-  'NOISE': 'Public Health',
-  'OTHER': 'Public Health',
-};
-
-interface SimilarComplaint {
-  category: string;
-  categoryLabel: string;
-  icon: LucideIcon;
-  myCount: number;
-  othersCount: number;
-  totalCount: number;
-  topLocations: string[];
-  avgResolutionWeeks: number;
-  avgResolutionLabel?: string;
-}
-
-
-const DISASTER_COMPLAINTS: SimilarComplaint[] = [
-  {
-    category: 'DM_URBAN_FLOODING',
-    categoryLabel: 'Urban Flooding / Waterlogging',
-    icon: Waves,
-    myCount: 1,
-    othersCount: 411,
-    totalCount: 412,
-    topLocations: ['Nairobi Central', 'Mathare'],
-    avgResolutionWeeks: 8 / 168,
-    avgResolutionLabel: '8 hours',
-  },
-  {
-    category: 'DM_DRAIN_OVERFLOW',
-    categoryLabel: 'Drain Overflow During Rainfall',
-    icon: CloudRain,
-    myCount: 1,
-    othersCount: 237,
-    totalCount: 238,
-    topLocations: ['Eastleigh', 'Mukuru'],
-    avgResolutionWeeks: 10 / 168,
-    avgResolutionLabel: '10 hours',
-  },
-  {
-    category: 'DM_FLOODED_HOMES',
-    categoryLabel: 'Flooded Homes / Property Inundation',
-    icon: Home,
-    myCount: 1,
-    othersCount: 163,
-    totalCount: 164,
-    topLocations: ['Kibera', 'Mathare'],
-    avgResolutionWeeks: 12 / 168,
-    avgResolutionLabel: '12 hours',
-  },
-  {
-    category: 'DM_STORMWATER_BLOCKED',
-    categoryLabel: 'Blocked Stormwater Channel',
-    icon: Construction,
-    myCount: 1,
-    othersCount: 195,
-    totalCount: 196,
-    topLocations: ['South B', 'Industrial Area'],
-    avgResolutionWeeks: 14 / 168,
-    avgResolutionLabel: '14 hours',
-  },
-  {
-    category: 'DM_EVACUATION',
-    categoryLabel: 'Emergency Evacuation Support',
-    icon: LifeBuoy,
-    myCount: 1,
-    othersCount: 72,
-    totalCount: 73,
-    topLocations: ['Mukuru', 'Korogocho'],
-    avgResolutionWeeks: 4 / 168,
-    avgResolutionLabel: '4 hours',
-  },
-  {
-    category: 'DM_FALLEN_TREE',
-    categoryLabel: 'Fallen Tree / Obstruction After Storm',
-    icon: Trees,
-    myCount: 1,
-    othersCount: 90,
-    totalCount: 91,
-    topLocations: ['Karen', 'Westlands'],
-    avgResolutionWeeks: 9 / 168,
-    avgResolutionLabel: '9 hours',
-  },
-];
-
-interface MyComplaintsSummaryProps {
-  categoryFilter?: string;
-}
-
-const CATEGORY_ICON_MAP: Record<string, LucideIcon> = {
-  roads: Route,
-  water: Droplet,
-  waste: Trash2,
-  streetlights: Lightbulb,
-  noise: Volume2,
-  other: ClipboardList,
-  WASTE: Trash2,
-  WATER: Droplet,
-  ROADS: Route,
-  STREETLIGHTS: Lightbulb,
-  NOISE: Volume2,
-  OTHER: ClipboardList,
-};
-
-export function MyComplaintsSummary({ categoryFilter = 'all' }: MyComplaintsSummaryProps = {}) {
+export function MyComplaintsSummary() {
   const [myTickets, setMyTickets] = useState<Story[]>([]);
-  const [allStories, setAllStories] = useState<Story[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -140,12 +22,8 @@ export function MyComplaintsSummary({ categoryFilter = 'all' }: MyComplaintsSumm
   const loadData = async () => {
     setIsLoading(true);
     try {
-      const [tickets, stories] = await Promise.all([
-        apiClient.getMyTickets(),
-        apiClient.getStories()
-      ]);
+      const tickets = await apiClient.getMyTickets();
       setMyTickets(tickets);
-      setAllStories(stories);
     } catch (err) {
       console.error('Error loading data:', err);
     } finally {
@@ -173,60 +51,6 @@ export function MyComplaintsSummary({ categoryFilter = 'all' }: MyComplaintsSumm
       overdue: complaints.filter(t => t.isOverdue || (t.sla && t.sla.remaining < 0)).length,
     };
   }, [myTickets]);
-
-  // Calculate similar complaints based on user's categories with department data
-  const similarComplaints = useMemo((): SimilarComplaint[] => {
-    // When filtering by Disaster Management, show only disaster-related complaint types
-    if (categoryFilter === 'disaster') {
-      return DISASTER_COMPLAINTS;
-    }
-
-    const myCategories = new Set(myTickets.map(t => t.issueCategory).filter(Boolean));
-    
-    if (myCategories.size === 0) return DISASTER_COMPLAINTS;
-
-    // Get department data for "Others" counts
-    const departmentData = getComplaintsByDepartment();
-
-    const userDerived = Array.from(myCategories).map(categoryCode => {
-      const categoryInfo = ISSUE_CATEGORIES.find(c => c.code === categoryCode);
-      const myCount = myTickets.filter(t => t.issueCategory === categoryCode).length;
-      
-      // Get "Others" count from department data
-      const departmentName = CATEGORY_TO_DEPARTMENT[categoryCode || 'OTHER'];
-      const deptData = departmentData.find(d => d.department === departmentName);
-      const othersCount = deptData ? deptData.count : Math.round(Math.random() * 500 + 100);
-      
-      // Get top locations from all stories in this category
-      const allInCategory = allStories.filter(s => s.issueCategory === categoryCode);
-      const locationCounts = allInCategory.reduce((acc, s) => {
-        if (s.wardName) {
-          acc[s.wardName] = (acc[s.wardName] || 0) + 1;
-        }
-        return acc;
-      }, {} as Record<string, number>);
-      
-      const topLocations = Object.entries(locationCounts)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 3)
-        .map(([name]) => name);
-
-      // Mock avg resolution time in weeks (1-4 weeks range)
-      const avgResolutionWeeks = Math.round((Math.random() * 3 + 1) * 10) / 10;
-
-      return {
-        category: categoryCode || 'other',
-        categoryLabel: categoryInfo?.label || 'Other',
-        icon: CATEGORY_ICON_MAP[categoryCode || 'other'] || ClipboardList,
-        myCount,
-        othersCount,
-        totalCount: myCount + othersCount,
-        topLocations,
-        avgResolutionWeeks,
-      };
-    });
-    return [...userDerived, ...DISASTER_COMPLAINTS];
-  }, [myTickets, allStories, categoryFilter]);
 
   if (isLoading) {
     return (
@@ -343,71 +167,6 @@ export function MyComplaintsSummary({ categoryFilter = 'all' }: MyComplaintsSumm
           </div>
         </CardContent>
       </Card>
-
-      {/* Department Ratings from General Feedback */}
-      <DepartmentRatingsDetail />
-
-      {/* Similar Complaints Section */}
-      {similarComplaints.length > 0 && (
-        <Card className="ncc-card">
-          <CardHeader className="pb-3">
-            <div className="flex items-center gap-2">
-              <Users className="w-5 h-5 text-muted-foreground" />
-              <CardTitle className="text-lg">Similar Complaints from Others</CardTitle>
-              <InfoTooltip definition="Complaints from other citizens in the same categories as yours. See how many others are facing similar issues." />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {similarComplaints.map((similar) => {
-                const Icon = similar.icon;
-                return (
-                <div 
-                  key={similar.category}
-                  className="p-4 rounded-lg border border-border bg-muted/30 hover:bg-muted/50 transition-colors"
-                >
-                  {/* Header with icon, title, and badge */}
-                  <div className="flex items-start gap-3 mb-4">
-                    <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-                      <Icon className="w-5 h-5" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-foreground leading-tight">{similar.categoryLabel}</h4>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        You: {similar.myCount} • Others: {similar.othersCount.toLocaleString()}
-                      </p>
-                    </div>
-                    <Badge variant="secondary" className="text-xs flex-shrink-0 whitespace-nowrap">
-                      {similar.totalCount.toLocaleString()} total
-                    </Badge>
-                  </div>
-                  
-                  {/* Avg Resolution Row */}
-                  <div className="flex items-center justify-between text-sm py-2 border-t border-border/50">
-                    <span className="text-muted-foreground">Avg. Resolution:</span>
-                    <span className="font-semibold text-foreground">{similar.avgResolutionLabel ?? `${similar.avgResolutionWeeks} weeks`}</span>
-                  </div>
-                  
-                  {/* Hot spots */}
-                  {similar.topLocations.length > 0 && (
-                    <div className="pt-2 border-t border-border/50">
-                      <span className="text-xs text-muted-foreground block mb-1.5">Hot spots:</span>
-                      <div className="flex flex-wrap gap-1">
-                        {similar.topLocations.map((loc) => (
-                          <Badge key={loc} variant="outline" className="text-xs">
-                            {loc}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 }

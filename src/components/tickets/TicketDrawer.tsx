@@ -90,6 +90,11 @@ export function TicketDrawer({ ticket, open, onClose, onUpdate }: TicketDrawerPr
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap mb-1">
               {issueCat && <span className="text-xl">{issueCat.icon}</span>}
+              {(ticket.serviceName || issueCat?.label) && (
+                <span className="text-sm font-medium text-muted-foreground">
+                  {ticket.serviceName || issueCat?.label}
+                </span>
+              )}
               <span className="font-mono text-sm text-primary font-medium">{ticket.ticketId}</span>
               <span className={cn(
                 'px-2 py-0.5 rounded-full text-xs font-semibold',

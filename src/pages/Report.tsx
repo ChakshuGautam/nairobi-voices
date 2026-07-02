@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Check, FileText, Mic, Heart, User, ChevronDown, Users } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, FileText, Mic, User, ChevronDown, Users } from 'lucide-react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { ReportStepper } from '@/components/report/ReportStepper';
 import { CategoryPicker } from '@/components/report/CategoryPicker';
@@ -9,7 +9,6 @@ import { PhotoUpload } from '@/components/report/PhotoUpload';
 import { VoiceRecorder } from '@/components/voice/VoiceRecorder';
 import { LocationStep, LocationData } from '@/components/report/LocationStep';
 import { ComplaintIntentStep, ComplaintIntent, LinkedProject } from '@/components/report/ComplaintIntentStep';
-import { AppreciationStep, AppreciationData } from '@/components/report/AppreciationStep';
 import { apiClient } from '@/lib/apiClient';
 import { ensureSession, getSession, isValidKeMobile } from '@/lib/auth';
 import { mapServiceCodeToIssueCategory } from '@/lib/digitMappers';
@@ -53,18 +52,11 @@ const STANDARD_STEPS = [
   { number: 6, label: 'Submit' },
 ];
 
-const APPRECIATION_STEPS = [
-  { number: 1, label: 'Intent' },
-  { number: 2, label: 'Appreciation' },
-  { number: 3, label: 'Submit' },
-];
-
 const Report = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [ticketId, setTicketId] = useState<string | null>(null);
-  const [appreciationSubmitted, setAppreciationSubmitted] = useState(false);
 
   // Form state
   const [locationData, setLocationData] = useState<LocationData>({
@@ -106,31 +98,10 @@ const Report = () => {
     }
   }, []);
   
-  // Appreciation form state
-  const [appreciationData, setAppreciationData] = useState<AppreciationData>({
-    department: '',
-    ward: '',
-    staffOrTeam: '',
-    message: '',
-    rating: 0,
-    photo: null,
-    audioRecording: null,
-  });
-
-  const isAppreciationFlow = complaintIntent === 'appreciation';
-  const STEPS = isAppreciationFlow ? APPRECIATION_STEPS : STANDARD_STEPS;
-  const maxStep = isAppreciationFlow ? 3 : 6;
+  const STEPS = STANDARD_STEPS;
+  const maxStep = 6;
 
   const canProceed = () => {
-    if (isAppreciationFlow) {
-      switch (currentStep) {
-        case 1: return complaintIntent !== null;
-        case 2: return appreciationData.department !== '' && appreciationData.message.trim().length > 0;
-        case 3: return true;
-        default: return false;
-      }
-    }
-    
     switch (currentStep) {
       case 1: return complaintIntent !== null;
       case 2:
@@ -160,10 +131,6 @@ const Report = () => {
 
   const handleIntentChange = (intent: ComplaintIntent) => {
     setComplaintIntent(intent);
-    // Reset step if switching to/from appreciation
-    if (intent === 'appreciation' || complaintIntent === 'appreciation') {
-      setCurrentStep(1);
-    }
   };
 
   const handleSubmit = async () => {
@@ -226,72 +193,6 @@ const Report = () => {
       setIsSubmitting(false);
     }
   };
-
-  const handleAppreciationSubmit = async () => {
-    if (isSubmitting) return;
-    setIsSubmitting(true);
-
-    try {
-      // Mock submission - in real app would call API
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setAppreciationSubmitted(true);
-    } catch (err) {
-      console.error('Error submitting appreciation:', err);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  // Success screen for appreciation
-  if (appreciationSubmitted) {
-    return (
-      <AppLayout>
-        <div className="max-w-lg mx-auto text-center py-12">
-          <div className="w-20 h-20 bg-secondary/20 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Heart className="w-10 h-10 text-secondary" />
-          </div>
-          <h1 className="text-3xl font-bold text-foreground mb-4">
-            Thank You!
-          </h1>
-          <p className="text-lg text-muted-foreground mb-6">
-            Your appreciation has been recorded and shared with the department.
-          </p>
-          <div className="bg-secondary/10 border border-secondary/30 rounded-xl p-4 mb-8">
-            <p className="text-foreground">
-              Recognizing great service helps motivate better performance across all county departments.
-            </p>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button
-              onClick={() => {
-                setAppreciationSubmitted(false);
-                setComplaintIntent(null);
-                setAppreciationData({
-                  department: '',
-                  ward: '',
-                  staffOrTeam: '',
-                  message: '',
-                  rating: 0,
-                  photo: null,
-                  audioRecording: null,
-                });
-                setCurrentStep(1);
-              }}
-              className="btn-primary"
-            >
-              Share Another
-            </button>
-            <button
-              onClick={() => navigate('/')}
-              className="btn-secondary"
-            >
-              Back to Home
-            </button>
-          </div>
-        </div>
-      </AppLayout>
-    );
-  }
 
   if (ticketId) {
     return (
@@ -359,69 +260,8 @@ const Report = () => {
           />
         )}
 
-        {/* Appreciation Flow - Step 2: Form */}
-        {isAppreciationFlow && currentStep === 2 && (
-          <AppreciationStep
-            data={appreciationData}
-            onDataChange={setAppreciationData}
-          />
-        )}
-
-        {/* Appreciation Flow - Step 3: Review */}
-        {isAppreciationFlow && currentStep === 3 && (
-          <div className="space-y-6">
-            <div className="text-center mb-6">
-              <Heart className="w-12 h-12 text-secondary mx-auto mb-3" />
-              <h2 className="text-xl font-bold text-foreground">
-                Review Your Appreciation
-              </h2>
-            </div>
-            
-            <div className="space-y-4 text-sm">
-              <div className="flex justify-between py-2 border-b border-border">
-                <span className="text-muted-foreground">Department</span>
-                <span className="text-foreground font-medium">{appreciationData.department}</span>
-              </div>
-              {appreciationData.ward && (
-                <div className="flex justify-between py-2 border-b border-border">
-                  <span className="text-muted-foreground">Ward</span>
-                  <span className="text-foreground font-medium">{appreciationData.ward}</span>
-                </div>
-              )}
-              {appreciationData.staffOrTeam && (
-                <div className="flex justify-between py-2 border-b border-border">
-                  <span className="text-muted-foreground">Staff/Team</span>
-                  <span className="text-foreground font-medium">{appreciationData.staffOrTeam}</span>
-                </div>
-              )}
-              <div className="py-2 border-b border-border">
-                <span className="text-muted-foreground block mb-1">Message</span>
-                <span className="text-foreground">{appreciationData.message}</span>
-              </div>
-              {appreciationData.rating > 0 && (
-                <div className="flex justify-between py-2 border-b border-border">
-                  <span className="text-muted-foreground">Rating</span>
-                  <span className="text-foreground font-medium">{'⭐'.repeat(appreciationData.rating)}</span>
-                </div>
-              )}
-              {appreciationData.photo && (
-                <div className="flex justify-between py-2 border-b border-border">
-                  <span className="text-muted-foreground">Photo</span>
-                  <span className="text-foreground font-medium">1 attached</span>
-                </div>
-              )}
-              {appreciationData.audioRecording && (
-                <div className="flex justify-between py-2 border-b border-border">
-                  <span className="text-muted-foreground">Voice Note</span>
-                  <span className="text-foreground font-medium">🎤 Recording attached</span>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
         {/* Standard Flow - Step 2: Location */}
-        {!isAppreciationFlow && currentStep === 2 && (
+        {currentStep === 2 && (
           <LocationStep 
             location={locationData}
             onLocationChange={setLocationData}
@@ -432,7 +272,7 @@ const Report = () => {
         )}
 
         {/* Standard Flow - Step 3: Category */}
-        {!isAppreciationFlow && currentStep === 3 && (
+        {currentStep === 3 && (
           <CategoryPicker
             selected={serviceCode}
             onSelect={(def) => {
@@ -450,7 +290,7 @@ const Report = () => {
         )}
 
         {/* Standard Flow - Step 4: Photos */}
-        {!isAppreciationFlow && currentStep === 4 && (
+        {currentStep === 4 && (
           <PhotoUpload
             photos={photos}
             onPhotosChange={setPhotos}
@@ -459,7 +299,7 @@ const Report = () => {
         )}
 
         {/* Standard Flow - Step 5: Details */}
-        {!isAppreciationFlow && currentStep === 5 && (
+        {currentStep === 5 && (
           <div className="space-y-6">
             <div>
               <label htmlFor="title" className="block text-lg font-semibold text-foreground mb-2">
@@ -476,77 +316,16 @@ const Report = () => {
               />
             </div>
 
-            {/* Department Assignment Section */}
+            {/* Department Assignment Section (read-only) */}
             <div className="bg-muted/30 rounded-xl p-4 border border-border">
               <div className="flex items-center gap-2 mb-2">
                 <Building2 className="w-5 h-5 text-primary" />
                 <span className="font-semibold text-foreground">Who will handle this?</span>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button 
-                        type="button" 
-                        className="text-muted-foreground hover:text-foreground"
-                        aria-label="Department assignment information"
-                      >
-                        <Info className="w-4 h-4" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="max-w-xs">This department is responsible for handling complaints of this type.</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
               </div>
-              
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-sm text-muted-foreground">This issue will be sent to:</span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary font-medium text-sm">
-                  <Building2 className="w-3.5 h-3.5" />
-                  {responsibleDepartment}
-                  {departmentSelectionSource === 'AUTO' && (
-                    <span className="text-xs opacity-70">(auto)</span>
-                  )}
-                </span>
-              </div>
-              
-              <p className="text-xs text-muted-foreground mb-3">
-                Auto-selected based on your issue category. You can change this if needed.
+              <p className="text-sm text-muted-foreground">
+                The responsible department is assigned automatically based on the complaint
+                type you selected. You don't need to choose one.
               </p>
-              
-              <div className="flex items-center gap-2">
-                <label htmlFor="department-override" className="text-sm text-muted-foreground shrink-0">
-                  Change department:
-                </label>
-                <Select
-                  value={responsibleDepartment}
-                  onValueChange={(value) => {
-                    const autoMapped = issueCategory ? CATEGORY_TO_DEPARTMENT[issueCategory] : 'To be assigned';
-                    if (value === 'Let the system decide') {
-                      setResponsibleDepartment(autoMapped);
-                      setDepartmentSelectionSource('AUTO');
-                    } else {
-                      const dept = value as NairobiDepartment;
-                      setResponsibleDepartment(dept);
-                      setDepartmentSelectionSource(dept === autoMapped ? 'AUTO' : 'USER_OVERRIDE');
-                    }
-                  }}
-                >
-                  <SelectTrigger 
-                    id="department-override" 
-                    className="flex-1 bg-background"
-                    aria-label="Select responsible department"
-                  >
-                    <SelectValue placeholder="Select department" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-popover">
-                    <SelectItem value="Let the system decide">Let the system decide</SelectItem>
-                    {NAIROBI_DEPARTMENTS.map((dept) => (
-                      <SelectItem key={dept} value={dept}>{dept}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
             </div>
 
             <fieldset>
@@ -655,7 +434,7 @@ const Report = () => {
                     Don't share my information with departments handling this issue
                   </label>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    We will still contact you with updates, but your name and phone will be hidden from frontline staff.
+                    We'll use your contact only to send you updates about this issue.
                   </p>
                 </div>
               </div>
@@ -753,7 +532,7 @@ const Report = () => {
         )}
 
         {/* Standard Flow - Step 6: Review & Submit */}
-        {!isAppreciationFlow && currentStep === 6 && (
+        {currentStep === 6 && (
           <div className="space-y-6">
             <h2 className="text-xl font-bold text-foreground">
               Review your report
@@ -820,7 +599,7 @@ const Report = () => {
           </button>
         ) : (
           <button
-            onClick={isAppreciationFlow ? handleAppreciationSubmit : handleSubmit}
+            onClick={handleSubmit}
             disabled={isSubmitting}
             className="btn-primary flex items-center gap-2"
           >
@@ -828,8 +607,8 @@ const Report = () => {
               <span className="animate-pulse">Submitting...</span>
             ) : (
               <>
-                {isAppreciationFlow ? <Heart className="w-5 h-5" /> : <Check className="w-5 h-5" />}
-                <span>{isAppreciationFlow ? 'Send Appreciation' : 'Submit Report'}</span>
+                <Check className="w-5 h-5" />
+                <span>Submit Report</span>
               </>
             )}
           </button>

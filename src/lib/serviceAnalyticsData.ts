@@ -256,53 +256,11 @@ export function getStatusByBoundary(dimension: 'ward' | 'department'): StatusByB
   }));
 }
 
-// Sub-counties for filter
-export const SUB_COUNTIES = [
-  { value: 'all', label: 'All Nairobi' },
-  { value: 'westlands', label: 'Westlands' },
-  { value: 'dagoretti-north', label: 'Dagoretti North' },
-  { value: 'dagoretti-south', label: 'Dagoretti South' },
-  { value: 'langata', label: 'Lang\'ata' },
-  { value: 'kibra', label: 'Kibra' },
-  { value: 'roysambu', label: 'Roysambu' },
-  { value: 'kasarani', label: 'Kasarani' },
-  { value: 'ruaraka', label: 'Ruaraka' },
-  { value: 'embakasi-south', label: 'Embakasi South' },
-  { value: 'embakasi-north', label: 'Embakasi North' },
-  { value: 'embakasi-central', label: 'Embakasi Central' },
-  { value: 'embakasi-east', label: 'Embakasi East' },
-  { value: 'embakasi-west', label: 'Embakasi West' },
-  { value: 'makadara', label: 'Makadara' },
-  { value: 'kamukunji', label: 'Kamukunji' },
-  { value: 'starehe', label: 'Starehe' },
-  { value: 'mathare', label: 'Mathare' },
-];
-
+// Time ranges — only windows the analytics KPI API actually supports.
+// Values map to KPI windows via toAnalyticsWindow() in analyticsApi.ts.
 export const TIME_RANGES = [
+  { value: '1day', label: 'Last 24 hours' },
   { value: '7days', label: 'Last 7 days' },
   { value: '30days', label: 'Last 30 days' },
-  { value: '90days', label: 'Last 90 days' },
-  { value: 'fy', label: 'This Financial Year' },
-];
-
-export const CATEGORIES = [
-  { value: 'all', label: 'All Categories' },
-  { value: 'waste', label: 'Solid Waste' },
-  { value: 'water', label: 'Water & Sewerage' },
-  { value: 'roads', label: 'Roads' },
-  { value: 'lighting', label: 'Street Lighting' },
-  { value: 'health', label: 'Public Health' },
-  { value: 'markets', label: 'Markets' },
-  { value: 'disaster', label: 'Disaster Management' },
-];
-
-export const SOURCES = [
-  { value: 'all', label: 'All Sources' },
-  { value: 'mobile', label: 'Mobile App' },
-  { value: 'web', label: 'Web Portal' },
-  { value: 'call', label: 'Call Centre' },
-  { value: 'whatsapp', label: 'WhatsApp' },
-  { value: 'walkin', label: 'Walk-in Counter' },
-  { value: 'ivr', label: 'IVR' },
-  { value: 'ussd', label: 'USSD' },
+  { value: 'mtd', label: 'Month to date' },
 ];

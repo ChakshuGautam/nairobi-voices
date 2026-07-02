@@ -41,13 +41,6 @@ const INTENT_OPTIONS = [
     title: 'Give Us a Suggestion',
     description: 'Share ideas or general comments to help improve our community.',
     examples: 'e.g., "Idea for better waste bins", "Suggestion for park improvements"'
-  },
-  {
-    id: 'appreciation' as ComplaintIntent,
-    icon: '🌟',
-    title: 'Provide Appreciation',
-    description: 'Recognize excellent service or a staff member who helped you.',
-    examples: 'e.g., "Great job by the waste collection team!", "Thank you for quick response"'
   }
 ];
 
@@ -81,9 +74,7 @@ export const ComplaintIntentStep: React.FC<ComplaintIntentStepProps> = ({
       setVoiceTranscript(transcript);
 
       // Auto-detect intent from voice
-      if (transcript.includes('appreciate') || transcript.includes('thank') || transcript.includes('great job') || transcript.includes('well done') || transcript.includes('excellent')) {
-        onIntentChange('appreciation');
-      } else if (transcript.includes('project') || transcript.includes('construction') || transcript.includes('building')) {
+      if (transcript.includes('project') || transcript.includes('construction') || transcript.includes('building')) {
         onIntentChange('project');
       } else if (transcript.includes('feedback') || transcript.includes('suggestion') || transcript.includes('idea')) {
         onIntentChange('feedback');
@@ -209,15 +200,6 @@ export const ComplaintIntentStep: React.FC<ComplaintIntentStepProps> = ({
         </div>
       )}
 
-      {/* Appreciation Intent Additional Info */}
-      {intent === 'appreciation' && (
-        <div className="bg-secondary/10 border border-secondary/30 rounded-xl p-4">
-          <p className="text-sm text-foreground">
-            <strong>Thank you!</strong> On the next screen, you'll tell us who you'd like to 
-            appreciate. Your recognition helps celebrate great work and motivates better service.
-          </p>
-        </div>
-      )}
     </div>
   );
 };

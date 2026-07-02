@@ -40,6 +40,11 @@ export function TicketCard({ ticket, onViewDetails, className }: TicketCardProps
             {issueCat && (
               <span className="text-lg" aria-hidden="true">{issueCat.icon}</span>
             )}
+            {(ticket.serviceName || issueCat?.label) && (
+              <span className="text-xs font-medium text-muted-foreground truncate">
+                {ticket.serviceName || issueCat?.label}
+              </span>
+            )}
             <span className="text-xs font-mono text-muted-foreground">
               {ticket.ticketId}
             </span>

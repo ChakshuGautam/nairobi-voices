@@ -9,24 +9,16 @@ import { ComplaintsByDepartmentPie } from './cards/ComplaintsByDepartmentPie';
 import { TopComplaintsChart } from './cards/TopComplaintsChart';
 import { StatusByBoundaryTable } from './cards/StatusByBoundaryTable';
 import { MyComplaintsSummary } from './cards/MyComplaintsSummary';
-import {
-  SUB_COUNTIES,
-  TIME_RANGES,
-  CATEGORIES,
-  SOURCES,
-} from '@/lib/serviceAnalyticsData';
+import { TIME_RANGES } from '@/lib/serviceAnalyticsData';
 
 export function ServiceAnalytics() {
-  const [subCounty, setSubCounty] = useState('all');
   const [timeRange, setTimeRange] = useState('30days');
-  const [category, setCategory] = useState('all');
-  const [source, setSource] = useState('all');
 
   return (
     <div className="space-y-6">
-      {/* My Complaints Summary & Similar Complaints — backed by live PGR data
-          (apiClient.getMyTickets / getStories over ke.bomet). */}
-      <MyComplaintsSummary categoryFilter={category} />
+      {/* My Complaints Summary — backed by live PGR data
+          (apiClient.getMyTickets over ke.bomet). */}
+      <MyComplaintsSummary />
 
       {/* Aggregate Analytics Filter Bar */}
       <Card className="ncc-card">
@@ -36,19 +28,6 @@ export function ServiceAnalytics() {
               <Filter className="w-4 h-4" />
               Filters:
             </div>
-            
-            <Select value={subCounty} onValueChange={setSubCounty}>
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Location" />
-              </SelectTrigger>
-              <SelectContent>
-                {SUB_COUNTIES.map((sc) => (
-                  <SelectItem key={sc.value} value={sc.value}>
-                    {sc.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
 
             <Select value={timeRange} onValueChange={setTimeRange}>
               <SelectTrigger className="w-full sm:w-[180px]">
@@ -58,32 +37,6 @@ export function ServiceAnalytics() {
                 {TIME_RANGES.map((tr) => (
                   <SelectItem key={tr.value} value={tr.value}>
                     {tr.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Select value={category} onValueChange={setCategory}>
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Category" />
-              </SelectTrigger>
-              <SelectContent>
-                {CATEGORIES.map((cat) => (
-                  <SelectItem key={cat.value} value={cat.value}>
-                    {cat.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Select value={source} onValueChange={setSource}>
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Source" />
-              </SelectTrigger>
-              <SelectContent>
-                {SOURCES.map((src) => (
-                  <SelectItem key={src.value} value={src.value}>
-                    {src.label}
                   </SelectItem>
                 ))}
               </SelectContent>

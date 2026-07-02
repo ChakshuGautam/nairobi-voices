@@ -138,7 +138,7 @@ export function TicketTable({
                       {issueCat && (
                         <span className="text-lg" aria-hidden="true">{issueCat.icon}</span>
                       )}
-                      <span className="text-sm">{issueCat?.label || 'General'}</span>
+                      <span className="text-sm">{ticket.serviceName || issueCat?.label || 'General'}</span>
                     </div>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
