@@ -298,6 +298,9 @@ export default function TrainingModulePage() {
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
+            <p className="text-xs text-muted-foreground">
+              Progress and quiz results are saved on this device only.
+            </p>
           </div>
         </header>
 
@@ -393,16 +396,24 @@ export default function TrainingModulePage() {
               </p>
             ) : (
               <div className="grid gap-4 sm:grid-cols-2">
-                {filteredVideos.map((video) => (
+                {filteredVideos.map((video) => {
+                  const comingSoon = !video.url || video.url === '#';
+                  return (
                   <button
                     key={video.id}
-                    onClick={() => handleVideoClick(video.id)}
-                    className="ncc-card p-4 text-left hover:shadow-md transition-shadow group"
+                    onClick={() => !comingSoon && handleVideoClick(video.id)}
+                    disabled={comingSoon}
+                    className="ncc-card p-4 text-left hover:shadow-md transition-shadow group disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:shadow-none"
                   >
                     <div className="aspect-video bg-muted rounded-lg mb-3 flex items-center justify-center relative overflow-hidden">
                       <div className="absolute inset-0 bg-primary/10 group-hover:bg-primary/20 transition-colors" />
                       <Play className="w-12 h-12 text-primary relative z-10" />
-                      {progress.videosWatched.includes(video.id) && (
+                      {comingSoon && (
+                        <div className="absolute bottom-2 left-2 z-10">
+                          <Badge variant="secondary" className="text-xs">Coming soon</Badge>
+                        </div>
+                      )}
+                      {!comingSoon && progress.videosWatched.includes(video.id) && (
                         <div className="absolute top-2 right-2 z-10">
                           <CheckCircle2 className="w-5 h-5 text-success" />
                         </div>
@@ -411,10 +422,11 @@ export default function TrainingModulePage() {
                     <h4 className="font-medium text-foreground mb-1">{video.title}</h4>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Clock className="w-4 h-4" />
-                      {video.duration}
+                      {comingSoon ? 'Coming soon' : video.duration}
                     </div>
                   </button>
-                ))}
+                  );
+                })}
               </div>
             )}
           </TabsContent>
@@ -427,7 +439,9 @@ export default function TrainingModulePage() {
               </p>
             ) : (
               <div className="space-y-3">
-                {filteredDownloads.map((dl) => (
+                {filteredDownloads.map((dl) => {
+                  const comingSoon = !dl.url || dl.url === '#';
+                  return (
                   <div
                     key={dl.id}
                     className="ncc-card p-4 flex items-center justify-between gap-4"
@@ -439,7 +453,7 @@ export default function TrainingModulePage() {
                       <div>
                         <h4 className="font-medium text-foreground flex items-center gap-2">
                           {dl.name}
-                          {progress.downloadsClicked.includes(dl.id) && (
+                          {!comingSoon && progress.downloadsClicked.includes(dl.id) && (
                             <CheckCircle2 className="w-4 h-4 text-success" />
                           )}
                         </h4>
@@ -448,17 +462,22 @@ export default function TrainingModulePage() {
                         </p>
                       </div>
                     </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="gap-2"
-                      onClick={() => handleDownloadClick(dl.id)}
-                    >
-                      <Download className="w-4 h-4" />
-                      Download
-                    </Button>
+                    {comingSoon ? (
+                      <Badge variant="secondary" className="text-xs">Coming soon</Badge>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-2"
+                        onClick={() => handleDownloadClick(dl.id)}
+                      >
+                        <Download className="w-4 h-4" />
+                        Download
+                      </Button>
+                    )}
                   </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </TabsContent>

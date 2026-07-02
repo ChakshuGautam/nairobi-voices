@@ -32,6 +32,12 @@ export const MOCK_OTP = '123456';
 /** Default map / geo-location centre (Bomet). Used when a report has no coordinates. */
 export const MAP_CENTER = { lat: -0.7817, lng: 35.3428 } as const;
 
+/** Human-readable name of the county this deployment serves. Override with VITE_CITY_NAME. */
+export const CITY_NAME: string = import.meta.env.VITE_CITY_NAME || 'Bomet County';
+
+/** Short name of the county (for compact UI copy). */
+export const CITY_SHORT = 'Bomet';
+
 /** Default locale for localization + msgId suffixes. */
 export const DEFAULT_LOCALE = 'en_IN';
 

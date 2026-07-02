@@ -61,9 +61,9 @@ export function StoryFeed({ className, refreshTrigger }: StoryFeedProps) {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">Community Stories</h2>
+          <h2 className="text-2xl font-bold text-foreground">My Reports</h2>
           <p className="text-muted-foreground">
-            Recent reports and ideas from Naivasha
+            Complaints you've filed in Bomet
           </p>
         </div>
         
@@ -224,7 +224,7 @@ export function StoryFeed({ className, refreshTrigger }: StoryFeedProps) {
 
       {/* Stories list */}
       {!isLoading && stories.length > 0 && (
-        <div className="space-y-4" role="feed" aria-label="Community stories">
+        <div className="space-y-4" role="feed" aria-label="My reports">
           {stories.map((story, index) => (
             <StoryCard 
               key={story.id} 
@@ -239,11 +239,11 @@ export function StoryFeed({ className, refreshTrigger }: StoryFeedProps) {
       {/* Empty state */}
       {!isLoading && stories.length === 0 && (
         <div className="text-center py-12">
-          <p className="text-xl text-muted-foreground mb-2">No stories yet</p>
+          <p className="text-xl text-muted-foreground mb-2">No reports yet</p>
           <p className="text-muted-foreground">
-            {hasActiveFilters 
+            {hasActiveFilters
               ? 'Try changing your filters or check back later.'
-              : 'Be the first to share what is happening in your area!'
+              : "File a complaint or sign in to see the ones you've filed."
             }
           </p>
         </div>

@@ -172,7 +172,7 @@ export function TicketDetails({ ticket, onClose, onUpdate }: TicketDetailsProps)
                   onClick={() => setShowEscalate(true)}
                   className="text-sm text-destructive hover:underline"
                 >
-                  ⚠️ Escalate this ticket
+                  ⚠️ Request escalation
                 </button>
               ) : (
                 <div className="p-3 bg-destructive/10 border border-destructive/30 rounded-lg space-y-2">

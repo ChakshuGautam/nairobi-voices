@@ -4,6 +4,7 @@ import L from 'leaflet';
 import { MapPin, Mic, MicOff, Navigation, ChevronDown, HardHat, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { apiClient } from '@/lib/apiClient';
+import { MAP_CENTER } from '@/lib/config';
 import { Ward } from '@/types/story';
 import { Badge } from '@/components/ui/badge';
 import { ComplaintIntent, LinkedProject } from './ComplaintIntentStep';
@@ -244,8 +245,8 @@ export function LocationStep({ location, onLocationChange, intent, linkedProject
     }
   };
 
-  // Nairobi center coordinates
-  const NAIROBI_CENTER: [number, number] = [-1.2921, 36.8219];
+  // Default map centre (Bomet County).
+  const NAIROBI_CENTER: [number, number] = [MAP_CENTER.lat, MAP_CENTER.lng];
 
   return (
     <div className="space-y-6">

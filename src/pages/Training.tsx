@@ -78,7 +78,7 @@ export default function Training() {
                 Training & Help Centre
               </h1>
               <p className="text-lg text-muted-foreground mt-2">
-                Short modules to help citizens and county staff use Nairobi's digital services with confidence.
+                Short modules to help citizens and county staff use Bomet's digital services with confidence. Your progress and quiz results are saved on this device.
               </p>
             </div>
             <Button variant="outline" size="sm" className="gap-2" disabled>

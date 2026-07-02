@@ -313,7 +313,7 @@ export function pgrToStory(wrapper: ServiceWrapper, opts: PgrToStoryOptions = {}
     wardName,
     createdAt,
     updatedAt,
-    source: 'NAIROBI_ENGAGEMENT',
+    source: 'BOMET_VOICES',
     reporterName: citizenName,
     reporterPhone: s.citizen?.mobileNumber,
     citizen: citizenName

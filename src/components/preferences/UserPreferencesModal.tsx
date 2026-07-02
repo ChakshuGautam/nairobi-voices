@@ -144,6 +144,9 @@ export const UserPreferencesModal: React.FC<UserPreferencesModalProps> = ({
           <p className="text-sm text-muted-foreground mt-1">
             Select the areas and topics you want to follow
           </p>
+          <p className="text-xs text-muted-foreground/70 mt-1">
+            Preferences are saved on this device.
+          </p>
         </DialogHeader>
 
         <ScrollArea className="max-h-[60vh]">

@@ -57,7 +57,7 @@ export interface Story {
   wardName?: string;
   createdAt: string;
   updatedAt?: string;
-  source: 'NAIROBI_ENGAGEMENT';
+  source: string;
   
   // Contact info
   reporterName?: string;

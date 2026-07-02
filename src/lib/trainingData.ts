@@ -293,7 +293,7 @@ export const mockTrainingModules: TrainingModule[] = [
       {
         id: 'q1_2',
         question: 'What format does the ticket ID follow?',
-        options: ['NRB-YYYY-XXXXXX', 'TICKET-12345', 'COMPLAINT/2024/001', 'ID-NAIROBI-01'],
+        options: ['NRB-YYYY-XXXXXX', 'TICKET-12345', 'COMPLAINT/2024/001', 'ID-BOMET-01'],
         correctIndex: 0,
         explanation: 'Ticket IDs follow the format NRB-YYYY-XXXXXX.',
       },

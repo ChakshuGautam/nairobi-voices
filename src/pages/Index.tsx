@@ -1,21 +1,18 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { PenSquare, ArrowRight, Ticket, MapPin, Clock, Shield, Users, Settings2, GraduationCap, BarChart3, FileDown } from 'lucide-react';
+import { PenSquare, ArrowRight, Ticket, MapPin, Clock, Shield, Users, Settings2, GraduationCap, BarChart3 } from 'lucide-react';
 import nairobiSkyline from '@/assets/nairobi-skyline.jpg';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { NairobiMap } from '@/components/map/NairobiMap';
-import { HappeningsFeed } from '@/components/happenings/HappeningsFeed';
-import { ActiveSurveys } from '@/components/surveys/ActiveSurveys';
-import { findWardByCoords } from '@/lib/happeningsApi';
 import { UserPreferencesModal, loadUserPreferences, UserPreferences } from '@/components/preferences/UserPreferencesModal';
 import { ComplaintCategories } from '@/components/home/ComplaintCategories';
 import { Button } from '@/components/ui/button';
 import { KPI, kpiNumber, getComplaintTotal } from '@/lib/analyticsApi';
+import { CITY_NAME } from '@/lib/config';
 
 const Index = () => {
   const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [locationDescription, setLocationDescription] = useState('');
-  const [selectedWard, setSelectedWard] = useState<{ code: string; name: string } | null>(null);
   const [preferencesOpen, setPreferencesOpen] = useState(false);
   const [userPreferences, setUserPreferences] = useState<UserPreferences>(loadUserPreferences);
 
@@ -39,8 +36,6 @@ const Index = () => {
   const pct = (v: number | null) => (v == null ? '—' : `${(v * 100).toFixed(1)}%`);
   const handleLocationSelect = useCallback((location: { lat: number; lng: number }) => {
     setSelectedLocation(location);
-    const ward = findWardByCoords(location.lat, location.lng);
-    setSelectedWard(ward);
   }, []);
 
   const handleLocationDescriptionChange = useCallback((description: string) => {
@@ -61,12 +56,12 @@ const Index = () => {
               Welcome to
             </p>
             <h1 id="hero-title" className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
-              Nairobi City County
+              {CITY_NAME}
               <span className="block text-secondary">Citizen Portal</span>
             </h1>
             <p className="text-lg text-white/90 mb-8 leading-relaxed">
-              Report issues, track progress, and discover what's happening in your ward. 
-              Your voice matters in building a better Nairobi.
+              Report issues, track progress, and discover what's happening in your ward.
+              Your voice matters in building a better {CITY_NAME}.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link
@@ -101,6 +96,9 @@ const Index = () => {
               </p>
               <p className="text-sm text-muted-foreground">
                 Select your wards and topics of interest
+              </p>
+              <p className="text-xs text-muted-foreground/70 mt-0.5">
+                Saved on this device
               </p>
             </div>
           </div>
@@ -189,50 +187,14 @@ const Index = () => {
           </h2>
         </div>
         <p className="text-muted-foreground mb-6">
-          Mark a spot on the map to see what's happening nearby or to report an issue in your area.
+          Mark a spot on the map to pinpoint where you want to report an issue in your area.
         </p>
         
         <NairobiMap
           selectedLocation={selectedLocation}
           onLocationSelect={handleLocationSelect}
           onLocationDescriptionChange={handleLocationDescriptionChange}
-          showHappenings={true}
         />
-      </section>
-
-      {/* What's Happening Feed */}
-      <section className="mb-10" aria-labelledby="happenings-section-title">
-        <HappeningsFeed
-          wardCode={selectedWard?.code}
-          lat={selectedLocation?.lat ?? -1.2921}
-          lng={selectedLocation?.lng ?? 36.8219}
-          radiusKm={5}
-        />
-      </section>
-
-      {/* Active Surveys - Citizen Voice */}
-      <ActiveSurveys />
-
-      {/* Case Study Download Section */}
-      <section className="mb-10">
-        <div className="ncc-card p-6 bg-gradient-to-r from-primary/5 to-info/5 border-l-4 border-primary">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div>
-              <h3 className="text-xl font-bold text-foreground mb-2">📄 Platform Case Study</h3>
-              <p className="text-muted-foreground">
-                Download the complete feature documentation and case study for this citizen engagement platform prototype.
-              </p>
-            </div>
-            <a
-              href="/case-study-nairobi-citizen-platform.md"
-              download="Nairobi-Citizen-Platform-Case-Study.md"
-              className="ncc-btn-primary whitespace-nowrap flex items-center gap-2"
-            >
-              <FileDown className="w-5 h-5" />
-              Download Case Study
-            </a>
-          </div>
-        </div>
       </section>
 
       {/* CTA Section */}
@@ -250,12 +212,12 @@ const Index = () => {
                 See Something? Say Something.
               </h2>
               <p className="text-white/90 max-w-lg">
-                Potholes, garbage, broken streetlights, water leaks — report any issue and 
-                help Nairobi County respond faster to your community's needs.
+                Potholes, garbage, broken streetlights, water leaks — report any issue and
+                help {CITY_NAME} respond faster to your community's needs.
               </p>
             </div>
           </div>
-          
+
           <Link
             to="/report"
             className="ncc-btn-secondary whitespace-nowrap"
@@ -265,12 +227,12 @@ const Index = () => {
           </Link>
         </div>
 
-        {selectedLocation && selectedWard && (
+        {selectedLocation && (
           <div className="mt-6 pt-6 border-t border-white/20">
             <p className="text-sm text-white/80 flex items-center gap-2">
               <MapPin className="w-4 h-4 text-secondary" />
-              You've selected <strong className="text-secondary">{selectedWard.name} Ward</strong>. 
-              Your report will be linked to this location.
+              Location marked at <strong className="text-secondary">{selectedLocation.lat.toFixed(4)}, {selectedLocation.lng.toFixed(4)}</strong>.
+              Choose the ward on the report form to file your complaint.
             </p>
           </div>
         )}

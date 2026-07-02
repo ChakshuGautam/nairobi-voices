@@ -1,8 +1,9 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { MapPin, Menu, X, Home, Ticket, Phone, Mail, Globe, ClipboardList, FileText, BarChart3, GraduationCap, Building } from 'lucide-react';
+import { MapPin, Menu, X, Home, Ticket, Phone, Mail, Globe, BarChart3, GraduationCap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import nairobiCityCountyLogo from '@/assets/nairobi-city-county-logo.png';
+import { CITY_NAME } from '@/lib/config';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -10,10 +11,7 @@ interface AppLayoutProps {
 
 const navigation = [
   { name: 'Home', href: '/', icon: Home, description: 'Discover what is happening' },
-  { name: 'About My City', href: '/about-my-city', icon: Building, description: 'City info, events & FAQs' },
   { name: 'Report Issue', href: '/report', icon: MapPin, description: 'Report an issue' },
-  { name: 'Active Surveys', href: '/surveys', icon: ClipboardList, description: 'Participate in surveys' },
-  { name: 'Policy Feedback', href: '/policy', icon: FileText, description: 'Share views on policies' },
   { name: 'My Tickets', href: '/my-tickets', icon: Ticket, description: 'Track your reports' },
   { name: 'Data', href: '/data', icon: BarChart3, description: 'Service analytics' },
   { name: 'Training & Help', href: '/training', icon: GraduationCap, description: 'Learn how to use the portal' },
@@ -43,7 +41,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             <NavLink to="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
               <img 
                 src={nairobiCityCountyLogo} 
-                alt="Nairobi City County Logo" 
+                alt={`${CITY_NAME} Logo`} 
                 className="h-12 md:h-14 object-contain drop-shadow-lg"
               />
             </NavLink>
@@ -134,7 +132,7 @@ export function AppLayout({ children }: AppLayoutProps) {
               <div className="flex items-center gap-3">
                 <img 
                   src={nairobiCityCountyLogo} 
-                  alt="Nairobi City County Logo" 
+                  alt={`${CITY_NAME} Logo`} 
                   className="h-12 object-contain"
                 />
               </div>
@@ -171,7 +169,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                 </li>
                 <li className="flex items-center gap-3 opacity-80">
                   <Mail className="w-4 h-4 text-secondary" />
-                  <span>info@nairobi.go.ke</span>
+                  <span>info@bometfeedbackhub.digit.org</span>
                 </li>
                 <li className="flex items-center gap-3 opacity-80">
                   <Globe className="w-4 h-4 text-secondary" />
@@ -186,7 +184,7 @@ export function AppLayout({ children }: AppLayoutProps) {
           {/* Bottom bar */}
           <div className="pt-8 border-t border-white/10 text-center">
             <p className="text-sm opacity-60">
-              © {new Date().getFullYear()} Nairobi City County. All rights reserved.
+              © {new Date().getFullYear()} {CITY_NAME}. All rights reserved.
             </p>
           </div>
         </div>

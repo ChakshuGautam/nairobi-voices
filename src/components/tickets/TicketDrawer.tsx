@@ -271,7 +271,7 @@ export function TicketDrawer({ ticket, open, onClose, onUpdate }: TicketDrawerPr
                     className="w-full"
                   >
                     <AlertTriangle className="w-4 h-4 mr-2" />
-                    Escalate Ticket
+                    Request escalation
                   </Button>
                 ) : (
                   <div className="p-4 bg-destructive/10 border border-destructive/30 rounded-lg space-y-3">
@@ -316,14 +316,6 @@ export function TicketDrawer({ ticket, open, onClose, onUpdate }: TicketDrawerPr
               <p className="text-sm text-muted-foreground text-center py-4">
                 This ticket has been resolved. Please rate your satisfaction above.
               </p>
-            )}
-
-            {ticket.status === 'escalated' && (
-              <div className="p-4 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg">
-                <p className="text-sm text-red-700 dark:text-red-400">
-                  This ticket has been escalated and is receiving priority attention.
-                </p>
-              </div>
             )}
 
             {ticket.status === 'new' && (
