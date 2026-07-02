@@ -11,7 +11,7 @@ import { LocationStep, LocationData } from '@/components/report/LocationStep';
 import { ComplaintIntentStep, ComplaintIntent, LinkedProject } from '@/components/report/ComplaintIntentStep';
 import { AppreciationStep, AppreciationData } from '@/components/report/AppreciationStep';
 import { apiClient } from '@/lib/apiClient';
-import { ensureSession, isValidKeMobile } from '@/lib/auth';
+import { ensureSession, getSession, isValidKeMobile } from '@/lib/auth';
 import { mapServiceCodeToIssueCategory } from '@/lib/digitMappers';
 import { StorySubmission, IssueCategory, NairobiDepartment, CATEGORY_TO_DEPARTMENT, NAIROBI_DEPARTMENTS, DepartmentSelectionSource } from '@/types/story';
 import { toast } from 'sonner';
@@ -36,12 +36,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
-
-// Mock current user - in real app would come from auth context
-const currentUser = {
-  name: "Amina N.",
-  phone: "0712 345 678"
-};
 
 const RELATIONSHIP_OPTIONS = [
   "Family member",
@@ -101,11 +95,14 @@ const Report = () => {
   const [responsibleDepartment, setResponsibleDepartment] = useState<NairobiDepartment>('To be assigned');
   const [departmentSelectionSource, setDepartmentSelectionSource] = useState<DepartmentSelectionSource>('AUTO');
 
-  // Auto-populate contact info from currentUser
+  // Pre-fill contact info from the real citizen session, if one exists.
+  // Never pre-fill from anything else: a made-up default would silently file
+  // real PGR complaints under a phantom citizen.
   useEffect(() => {
-    if (currentUser) {
-      setReporterName(currentUser.name);
-      setReporterPhone(currentUser.phone);
+    const session = getSession();
+    if (session) {
+      setReporterName(session.user?.name ?? '');
+      setReporterPhone(session.mobile ?? '');
     }
   }, []);
   
