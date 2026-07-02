@@ -62,6 +62,12 @@ npm run build        # -> dist/  (vite base = /voices/)
 ./deploy-bomet.sh    # build → tar-over-ssh to egov-bomet:/var/www/voices → ensure nginx /voices/ location
 ```
 
+## Unit tests (Vitest)
+
+```sh
+npm run test:unit        # pure mappers/helpers (digitMappers, auth) — no network
+```
+
 ## End-to-end tests (Playwright)
 
 ```sh

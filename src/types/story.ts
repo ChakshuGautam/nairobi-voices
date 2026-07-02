@@ -170,23 +170,6 @@ export interface Ward {
   center: { lat: number; lng: number };
 }
 
-// Nairobi County wards (sample data)
-export const NAIROBI_WARDS: Ward[] = [
-  { code: 'westlands', name: 'Westlands', subcounty: 'Westlands', center: { lat: -1.2673, lng: 36.8058 } },
-  { code: 'parklands', name: 'Parklands/Highridge', subcounty: 'Westlands', center: { lat: -1.2621, lng: 36.8135 } },
-  { code: 'kilimani', name: 'Kilimani', subcounty: 'Dagoretti North', center: { lat: -1.2892, lng: 36.7865 } },
-  { code: 'karen', name: 'Karen', subcounty: 'Lang\'ata', center: { lat: -1.3196, lng: 36.7128 } },
-  { code: 'langata', name: 'Lang\'ata', subcounty: 'Lang\'ata', center: { lat: -1.3550, lng: 36.7600 } },
-  { code: 'kibera', name: 'Kibera', subcounty: 'Kibra', center: { lat: -1.3133, lng: 36.7833 } },
-  { code: 'embakasi_central', name: 'Embakasi Central', subcounty: 'Embakasi Central', center: { lat: -1.3100, lng: 36.8900 } },
-  { code: 'ruaraka', name: 'Ruaraka', subcounty: 'Ruaraka', center: { lat: -1.2450, lng: 36.8750 } },
-  { code: 'kasarani', name: 'Kasarani', subcounty: 'Kasarani', center: { lat: -1.2208, lng: 36.8956 } },
-  { code: 'roysambu', name: 'Roysambu', subcounty: 'Roysambu', center: { lat: -1.2167, lng: 36.8833 } },
-  { code: 'mathare', name: 'Mathare', subcounty: 'Mathare', center: { lat: -1.2633, lng: 36.8583 } },
-  { code: 'starehe', name: 'Starehe', subcounty: 'Starehe', center: { lat: -1.2833, lng: 36.8333 } },
-  { code: 'nairobi_central', name: 'Nairobi Central', subcounty: 'Starehe', center: { lat: -1.2864, lng: 36.8172 } },
-];
-
 export const ISSUE_CATEGORIES: { code: IssueCategory; label: string; icon: string; description: string; serviceCode: string }[] = [
   { code: 'roads', label: 'Roads & Potholes', icon: '🛣️', description: 'Potholes, road damage, traffic issues', serviceCode: 'ROAD_MAINTENANCE' },
   { code: 'water', label: 'Water & Sewage', icon: '💧', description: 'Leaks, blockages, water supply', serviceCode: 'WATER_SUPPLY' },

@@ -44,7 +44,7 @@ import {
   type ModuleStatus,
   type QuizQuestion,
 } from '@/lib/trainingData';
-import { toast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 
 const statusLabels: Record<ModuleStatus, string> = {
   not_started: 'Not started',
@@ -166,8 +166,7 @@ export default function TrainingModulePage() {
       const updated = markDownloadClicked(moduleId, downloadId);
       setProgress(updated);
     }
-    toast({
-      title: 'Download started',
+    toast.success('Download started', {
       description: 'Your file will download shortly.',
     });
   };
@@ -176,8 +175,7 @@ export default function TrainingModulePage() {
     if (moduleId && hasPassedQuiz(moduleId)) {
       const updated = markModuleCompleted(moduleId);
       setProgress(updated);
-      toast({
-        title: 'Module completed!',
+      toast.success('Module completed!', {
         description: 'Great job completing this training module.',
       });
     }
@@ -194,10 +192,8 @@ export default function TrainingModulePage() {
     // Check all questions are answered
     const unanswered = module.quiz.filter((q) => quizAnswers[q.id] === undefined);
     if (unanswered.length > 0) {
-      toast({
-        title: 'Please answer all questions',
+      toast.error('Please answer all questions', {
         description: `${unanswered.length} question(s) remaining.`,
-        variant: 'destructive',
       });
       return;
     }
@@ -208,15 +204,12 @@ export default function TrainingModulePage() {
     setShowQuizResults(true);
 
     if (passed) {
-      toast({
-        title: 'Quiz Passed!',
+      toast.success('Quiz Passed!', {
         description: `You scored ${score}%. You can now mark this module as completed.`,
       });
     } else {
-      toast({
-        title: 'Quiz Not Passed',
+      toast.error('Quiz Not Passed', {
         description: `You scored ${score}%. You need ${module.passingScore}% to pass. Try again!`,
-        variant: 'destructive',
       });
     }
   };

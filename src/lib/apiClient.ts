@@ -459,12 +459,6 @@ export const apiClient = {
 // Browser-only speech helpers (unchanged — no DIGIT dependency)
 // ---------------------------------------------------------------------------
 
-// Placeholder for future speech-to-text integration
-export async function transcribeAudio(audioBlob: Blob): Promise<string> {
-  console.log('Audio transcription placeholder - audio size:', audioBlob.size);
-  return '[Voice message - transcription coming soon]';
-}
-
 // Text-to-speech utility using Web Speech API
 export function speakText(text: string, lang: string = 'en-US'): Promise<void> {
   return new Promise((resolve) => {

@@ -1,5 +1,23 @@
 # Cleanup TODO — Lovable-generated code
 
+## Status (2026-07-02)
+
+**Done** (issues #19 + #22 cleanup pass): dead code deleted — **62 files removed**, ~24 npm deps
+pruned (theme 1); toast consolidated to sonner (2.1); `@tanstack/react-query` removed — it was
+installed with 0 `useQuery` uses (2.3); route-level **code-splitting** via `React.lazy` — the
+1.2 MB single chunk is now split (Data/Leaflet/Recharts no longer load on first paint) (5.1);
+duplicate Google-Fonts `@import` removed (5.2); `lovable-tagger` removed + real package name/version
+(5.3); **vitest** added with 12 passing unit tests for the pure `digitMappers` + `auth` helpers (7.1);
+visible "Naivasha"/"Nairobi" copy fixed and branding made configurable via `CITY_NAME` (3.2, part of 3.1).
+
+**Remaining** (smaller follow-ups, not blocking): full "Nairobi" internal rename incl. `NairobiMap.tsx`
+file + assets (3.1), storage-key namespace migration (3.3), `NAIROBI_ENGAGEMENT`→ done but audit other
+constants (3.4), `ISSUE_CATEGORIES` → pure presentation map (4.2), staged TS `strict` re-enable (4.4),
+split the 800-line `Report.tsx` (6.1), console-log sweep + eslint `no-console` (6.3), remove the
+`Index.tsx` stats IIFE (6.5), broaden unit tests to `analyticsApi` row-parsing (7.1 cont.).
+
+---
+
 Gap analysis of the original Lovable scaffold vs the hand-written DIGIT layer
 (`src/lib/{config,http,auth,apiClient,digitMappers,analyticsApi}.ts`, `src/hooks/useKpi.ts` are the quality bar).
 Baseline: single 1.41 MB JS chunk (401 KB gz), 20,968 src lines, `React.lazy` = 0 uses, `useQuery` = 0 uses.

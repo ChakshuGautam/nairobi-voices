@@ -1,25 +1,30 @@
-import { Toaster } from "@/components/ui/toaster";
+import { Suspense, lazy } from "react";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import Report from "./pages/Report";
-import Stories from "./pages/Stories";
-import MyTickets from "./pages/MyTickets";
-import Data from "./pages/Data";
-import Training from "./pages/Training";
-import TrainingModule from "./pages/TrainingModule";
-import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient();
+// Route-level code splitting: each page is its own chunk so first paint of
+// any route doesn't drag in Leaflet/Recharts/etc. from every other page.
+const Index = lazy(() => import("./pages/Index"));
+const Report = lazy(() => import("./pages/Report"));
+const Stories = lazy(() => import("./pages/Stories"));
+const MyTickets = lazy(() => import("./pages/MyTickets"));
+const Data = lazy(() => import("./pages/Data"));
+const Training = lazy(() => import("./pages/Training"));
+const TrainingModule = lazy(() => import("./pages/TrainingModule"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+
+const PageFallback = () => (
+  <div className="min-h-screen flex items-center justify-center text-muted-foreground">
+    Loading…
+  </div>
+);
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+  <TooltipProvider>
+    <Sonner />
+    <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+      <Suspense fallback={<PageFallback />}>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/report" element={<Report />} />
@@ -32,9 +37,9 @@ const App = () => (
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+      </Suspense>
+    </BrowserRouter>
+  </TooltipProvider>
 );
 
 export default App;
